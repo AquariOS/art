@@ -197,6 +197,12 @@ class DexFileVerifier {
   // Check validity of given method if it's a constructor or class initializer.
   bool CheckConstructorProperties(uint32_t method_index, uint32_t constructor_flags);
 
+  template <typename ExtraCheckFn>
+  bool VerifyTypeDescriptor(dex::TypeIndex idx,
+                            const char* error_msg1,
+                            const char* error_msg2,
+                            ExtraCheckFn extra_check);
+
   const DexFile* const dex_file_;
   const uint8_t* const begin_;
   const size_t size_;
@@ -239,6 +245,10 @@ class DexFileVerifier {
 
   // Set of type ids for which there are ClassDef elements in the dex file.
   std::unordered_set<decltype(DexFile::ClassDef::class_idx_)> defined_classes_;
+
+  // A bitvector for verified type descriptors. Each bit corresponds to a type index. A set
+  // bit denotes that the descriptor has been verified wrt/ IsValidDescriptor.
+  std::vector<char> verified_type_descriptors_;
 };
 
 }  // namespace art
